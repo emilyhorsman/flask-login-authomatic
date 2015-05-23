@@ -1,0 +1,5 @@
+<ul>
+{% for provider in providers %}
+    <li><a href="{{ url_for("login", provider_name=provider) }}">Login with {{ provider }}</a></li>
+{% endfor %}
+</ul>

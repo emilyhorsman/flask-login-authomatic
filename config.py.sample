@@ -1,11 +1,22 @@
+from authomatic.providers import oauth2, oauth1
+import authomatic
+
 database = "sqlite:///test.db"
-flask_secret = "### INSERT UNIQUE SECRET KEY ###"
-authomatic_secret = "### INSERT UNIQUE SECRET KEY ###"
+flask_secret = "###"
+default_provider = "twitter"
+authomatic_secret = "###"
 authomatic_config = {
-    "tw": {
-        "class_": "oauth1.Twitter",
-        "id": 1,
-        "consumer_key": "### INSERT TWITTER CONSUMER KEY ###",
-        "consumer_secret": "### INSERT TWITTER CONSUMER SECRET ###"
+    "twitter": {
+        "class_": oauth1.Twitter,
+        "id": authomatic.provider_id(),
+        "consumer_key": "###",
+        "consumer_secret": "###"
+        },
+    "google": {
+        "class_": oauth2.Google,
+        "id": authomatic.provider_id(),
+        "consumer_key": "###",
+        "consumer_secret": "###",
+        "scope": oauth2.Google.user_info_scope
         }
     }

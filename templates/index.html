@@ -2,9 +2,8 @@
 
 {% if current_user.name %}
     Hello {{ current_user.name }}!
+    <br /><br />
 {% endif %}
-
-<br /><br />
 
 <form action="{{ url_for("index") }}" method="POST">
     Change your name!

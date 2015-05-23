@@ -23,7 +23,8 @@ authomatic = Authomatic(config.authomatic_config, config.authomatic_secret)
 
 # Super quick user model with peewee
 class User(UserMixin, database.Model):
-    auth = CharField(unique=True) # uid given by authomatic provider
+    auth_provider = CharField()
+    auth_id = CharField()
     name = CharField(null=True)
 
 @login_manager.user_loader
@@ -35,7 +36,7 @@ def load_user(uid):
 
 @login_manager.unauthorized_handler
 def unauthorized():
-    return redirect(url_for("login"))
+    return redirect(url_for("choose_provider"))
 
 @app.route("/", methods=["GET", "POST"])
 @login_required
@@ -46,21 +47,40 @@ def index():
 
     return render_template("index.html")
 
-@app.route("/login", methods=["GET", "POST"])
-def login():
+@app.route("/<int:uid>")
+def view_user(uid):
+    user = load_user(uid)
+    if user is None:
+        return "Does not exist."
+    else:
+        return "This is {}!".format(user.name)
+
+@app.route("/providers")
+def choose_provider():
+    if current_user.is_authenticated():
+        return redirect(url_for("index"))
+
+    return render_template("providers.html", providers=config.authomatic_config.keys())
+
+@app.route("/login")
+@app.route("/login/<provider_name>", methods=["GET", "POST"])
+def login(provider_name=config.default_provider):
     # Redirect back to index if this action is accessed when already logged in.
     if current_user.is_authenticated():
         return redirect(url_for("index"))
 
+    if provider_name not in config.authomatic_config.keys():
+        abort(400)
+
     response = make_response()
-    result = authomatic.login(WerkzeugAdapter(request, response), "tw")
+    result = authomatic.login(WerkzeugAdapter(request, response), provider_name)
     if result:
         if result.user:
             # authomatic
             result.user.update()
 
             # model
-            user, created = User.get_or_create(auth=result.user.id)
+            user, created = User.get_or_create(auth_provider=result.user.provider.id, auth_id=result.user.id)
 
             # flask-login
             login_user(user)
@@ -78,7 +98,7 @@ def login():
 @app.route("/logout")
 def logout():
     logout_user()
-    return "Logged out."
+    return redirect(url_for("choose_provider"))
 
 if __name__ == "__main__":
     database.database.create_tables([User], safe=True)
