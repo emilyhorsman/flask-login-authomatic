@@ -1,0 +1,15 @@
+<!-- {{ session|tojson|safe }} -->
+
+{% if current_user.name %}
+    Hello {{ current_user.name }}!
+{% endif %}
+
+<br /><br />
+
+<form action="{{ url_for("index") }}" method="POST">
+    Change your name!
+    <input type="text" name="name" value="{{ current_user.name or "" }}" />
+    <input type="submit" value="Submit" />
+</form>
+
+<a href="{{ url_for("logout") }}">Logout</a>

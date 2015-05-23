@@ -1,0 +1,11 @@
+database = "sqlite:///test.db"
+flask_secret = "### INSERT UNIQUE SECRET KEY ###"
+authomatic_secret = "### INSERT UNIQUE SECRET KEY ###"
+authomatic_config = {
+    "tw": {
+        "class_": "oauth1.Twitter",
+        "id": 1,
+        "consumer_key": "### INSERT TWITTER CONSUMER KEY ###",
+        "consumer_secret": "### INSERT TWITTER CONSUMER SECRET ###"
+        }
+    }
