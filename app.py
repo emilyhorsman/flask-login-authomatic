@@ -83,7 +83,7 @@ def login(provider_name=config.default_provider):
             user, created = User.get_or_create(auth_provider=result.user.provider.id, auth_id=result.user.id)
 
             # flask-login
-            login_user(user)
+            login_user(user, remember=True)
 
             return redirect(url_for("index"))
 
